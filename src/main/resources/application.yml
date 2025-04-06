@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: temporal-codec
+  cloud:
+    vault:
+      uri: http://localhost:8200
+      token: ${VAULT_TOKEN}
+
+
+cache:
+  ttl: 60
+codec:
+  vault:
+    config-path: config.json
+    schedule-cron: 0 * * * * *
