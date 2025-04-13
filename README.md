@@ -1,12 +1,11 @@
 # Temporal Codec Application
 
 ## Overview
-The Codec Application is a Spring Boot project designed to encode and decode payloads using Temporal's PayloadCodec. It also integrates with HashiCorp Vault for secure key management and caching using Caffeine.
+The Codec Application is a Spring Boot project designed to encode and decode payloads using Temporal's PayloadCodec. It also integrates with HashiCorp Vault for secure key management.
 
 ## Features
 - Encode and decode payloads via REST API.
 - Secure key management with HashiCorp Vault.
-- Caching with Caffeine for improved performance.
 - Scheduled key rotation.
 
 ## Technologies Used
@@ -15,7 +14,6 @@ The Codec Application is a Spring Boot project designed to encode and decode pay
 - Maven
 - Temporal
 - HashiCorp Vault
-- Caffeine Cache
 
 ## Getting Started
 
@@ -35,6 +33,10 @@ The Codec Application is a Spring Boot project designed to encode and decode pay
     - Ensure Vault is running and accessible at `http://localhost:8200`.
     - Set the Vault token in the `application.yml` file or as an environment variable.
 
+    ```sh
+    vault server -dev -dev-root-token-id root
+    ```
+
 3. Build the project:
     ```sh
     mvn clean install
@@ -44,6 +46,14 @@ The Codec Application is a Spring Boot project designed to encode and decode pay
     ```sh
     mvn spring-boot:run
     ```
+
+### Testing
+To run the tests, use the following command:
+```sh
+mvn test
+```
+
+Ensure that Vault is running and properly configured before running the tests.
 
 ## Configuration
 The application can be configured using the `src/main/resources/application.yml` file. Key configuration properties include:
@@ -75,8 +85,8 @@ codec:
 - **Response:** Encoded JSON payload
 
 Example request:
-```curl
-curl --location 'localhost:8080/v1/codec/encode' \
+```sh
+curl --location 'http://localhost:8080/v1/codec/encode' \
 --header 'Content-Type: application/json' \
 --data '{
     "payloads": [
@@ -98,8 +108,8 @@ curl --location 'localhost:8080/v1/codec/encode' \
 - **Response:** Decoded JSON payload
 
 Example request:
-```curl
-curl --location 'localhost:8080/v1/codec/decode' \
+```sh
+curl --location 'http://localhost:8080/v1/codec/decode' \
 --header 'Content-Type: application/json' \
 --data '{
     "payloads": [
@@ -126,3 +136,4 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 
 ## Contact
 For any questions or support, please contact `1.olah.istvan.75@gmail.com`.
+`

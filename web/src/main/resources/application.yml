@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: temporal-codec
+  cloud:
+    vault:
+      uri: http://localhost:8200
+      token: ${VAULT_TOKEN}
+
+
+
+codec:
+  greeting-vault:
+    tag: greeting
+    config-path: greeting.json
+  farewell-vault:
+    tag: farewell
+    config-path: farewell.json
+    cache-refresh-interval: 60
+  shared-vault:
+    tag: shared
+    config-path: shared.json
