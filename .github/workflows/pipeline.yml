@@ -1,0 +1,64 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - '*'
+
+env:
+  VERSION: '0.0.1'
+  REGISTRY: ghcr.io
+  OWNER: istvan-olah
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      image_version: ${{ steps.version.outputs.IMAGE_VERSION }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set image version
+        id: version
+        run: |
+          SHORT_COMMIT=$(echo ${GITHUB_SHA} | cut -c1-7)
+          if [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
+            IMAGE_VERSION="${VERSION}-${SHORT_COMMIT}-RELEASE"
+          elif [[ "${GITHUB_REF}" == "refs/heads/develop" ]]; then
+            IMAGE_VERSION="${VERSION}-SNAPSHOT"
+          else
+            BRANCH_NAME=$(echo $GITHUB_REF | sed 's/refs\/heads\///' | sed 's/\//-/g')
+            IMAGE_VERSION="${VERSION}-${BRANCH_NAME}-SNAPSHOT"
+          fi
+          echo "IMAGE_VERSION=$IMAGE_VERSION" >> $GITHUB_ENV
+          echo "IMAGE_VERSION=$IMAGE_VERSION" >> $GITHUB_OUTPUT
+          echo "Image version: $IMAGE_VERSION" >> $GITHUB_STEP_SUMMARY
+          echo $IMAGE_VERSION
+
+
+      - name: Set up Maven
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'oracle'
+
+      - name: Maven version
+        env:
+          MAVEN_OPTS: "-Dmaven.repo.local=/tmp/m2/repository"
+        run: |
+          mvn versions:set -DnewVersion=${{ env.IMAGE_VERSION }} -DprocessAllModules
+
+      - name: Build with Maven
+        env:
+          MAVEN_OPTS: "-Dmaven.repo.local=/tmp/m2/repository"
+        run: |
+          mvn clean install -Dspring.profiles.active=github-actions
+
+      - name: Publish package
+        run: mvn --batch-mode deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
