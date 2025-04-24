@@ -44,6 +44,7 @@ public class CodecApplicationConfig {
                                      @Value("${codec.shared-vault.tag}") String tag) {
         return new SimplePayloadCodec(vaultKeyStore, tag);
     }
+
     @Bean("greetingKeyStore")
     public KeyProvider greetingKeyStore(VaultTemplate vaultTemplate, @Value("${codec.greeting-vault.config-path}") String codecConfigPath,
                                       KeyGenerator keyGenerator) {
@@ -56,6 +57,7 @@ public class CodecApplicationConfig {
                                      @Value("${codec.greeting-vault.tag}") String tag) {
         return new SimplePayloadCodec(vaultKeyStore, tag);
     }
+
     @Bean("farewellKeyStore")
     public KeyProvider farewellKeyStore(VaultTemplate vaultTemplate, @Value("${codec.farewell-vault.config-path}") String codecConfigPath,
                                       KeyGenerator keyGenerator,

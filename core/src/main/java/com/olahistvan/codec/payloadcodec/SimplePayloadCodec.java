@@ -92,6 +92,14 @@ public class SimplePayloadCodec implements PayloadCodec {
         String keyId = keyProvider.getCurrentKeyId();
         SecretKey key = keyProvider.getKey(keyId);
 
+        boolean isEncoded = METADATA_ENCODING.equals(
+                payload.getMetadataOrDefault(EncodingKeys.METADATA_ENCODING_KEY, null));
+        boolean sameTag = tagByteString.equals(
+                payload.getMetadataOrDefault(METADATA_ENCRYPTION_TAG, null));
+        if (isEncoded && !sameTag) {
+            return payload;
+        }
+
         byte[] encryptedData;
         try {
             encryptedData = encrypt(payload.toByteArray(), key);
